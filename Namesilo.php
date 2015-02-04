@@ -361,9 +361,21 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         $result = $this->_request('removePrivacy', $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#retrieveAuthCode
+     */
     public function getEpp(Registrar_Domain $domain)
     {
-        throw new Exception('Registrar does not support EPP code retrieval');
+        $params = array(
+            'domain' => $domain->getName(),
+        );
+
+        $result = $this->_request('retrieveAuthCode', $params);
+        return true;
     }
     /**
      * Runs an api command and returns parsed data.
