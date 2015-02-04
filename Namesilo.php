@@ -345,11 +345,21 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
     }
     public function enablePrivacyProtection(Registrar_Domain $domain)
     {
-        throw new Exception('Registrar does not support privacy protection enable');
+        $params = array(
+            'domain' => $domain->getName(),
+        );
+
+        $result = $this->_request('addPrivacy', $params);
+        return true;
     }
     public function disablePrivacyProtection(Registrar_Domain $domain)
     {
-        throw new Exception('Registrar does not support privacy protection disable');
+        $params = array(
+            'domain' => $domain->getName(),
+        );
+
+        $result = $this->_request('removePrivacy', $params);
+        return true;
     }
     public function getEpp(Registrar_Domain $domain)
     {
