@@ -33,7 +33,7 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
     public function getTlds()
     {
         return array(
-            '.com', '.net', '.org', '.biz', '.info', '.mobi',
+            '.com', '.net', '.org', '.biz', '.info', '.mobi', '.us', '.me', '.co'
         );
     }
     public function isDomainAvailable(Registrar_Domain $domain)
