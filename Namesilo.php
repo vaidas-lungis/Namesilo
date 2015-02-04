@@ -343,6 +343,13 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         $result = $this->_request('domainUnlock', $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#addPrivacy
+     */
     public function enablePrivacyProtection(Registrar_Domain $domain)
     {
         $params = array(
@@ -352,6 +359,13 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         $result = $this->_request('addPrivacy', $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#removePrivacy
+     */
     public function disablePrivacyProtection(Registrar_Domain $domain)
     {
         $params = array(
