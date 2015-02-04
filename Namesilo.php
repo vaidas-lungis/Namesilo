@@ -311,13 +311,37 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         return (isset($result->reply->available)
             && ($result->reply->available->domain == $domain->getName()));
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#domainLock
+     */
     public function lock(Registrar_Domain $domain)
     {
-        throw new Exception('Registrar does not support domain locking');
+        $params = array(
+            'domain' => $domain->getName(),
+        );
+
+        $result = $this->_request('domainLock', $params);
+        return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#domainUnlock
+     */
     public function unlock(Registrar_Domain $domain)
     {
-        throw new Exception('Registrar does not support domain unlocking');
+        $params = array(
+            'domain' => $domain->getName(),
+        );
+
+        $result = $this->_request('domainUnlock', $params);
+        return true;
     }
     public function enablePrivacyProtection(Registrar_Domain $domain)
     {
