@@ -293,9 +293,23 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         $this->_request($cmd, $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#checkTransferAvailability
+     */
     public function isDomainCanBeTransfered(Registrar_Domain $domain)
     {
-        throw new Exception('Checking if domain can be transfered is disabled for this registrar');
+        $params = array(
+            'domains' => $domain->getName(),
+        );
+
+        $result = $this->_request('checkTransferAvailability', $params);
+
+        return (isset($result->reply->available)
+            && ($result->reply->available->domain == $domain->getName()));
     }
     public function lock(Registrar_Domain $domain)
     {
