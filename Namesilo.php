@@ -291,7 +291,7 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
     private function _getApiUrl()
     {
         if ($this->isTestEnv())
-            return 'http://sandbox.namesilo.com/api/';
-        return 'http://namesilo.com/api/';
+            return 'https://sandbox.namesilo.com/api/';
+        return 'https://namesilo.com/api/';
     }
 }
