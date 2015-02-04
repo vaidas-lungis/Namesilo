@@ -36,6 +36,13 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             '.com', '.net', '.org', '.biz', '.info', '.mobi', '.us', '.me', '.co'
         );
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#checkRegisterAvailability
+     */
     public function isDomainAvailable(Registrar_Domain $domain)
     {
         $params = array(
@@ -47,6 +54,13 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         return (isset($result->reply->available)
             && ($result->reply->available->domain == $domain->getName()));
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#changeNameServers
+     */
     public function modifyNs(Registrar_Domain $domain)
     {
         $params = array(
@@ -61,6 +75,14 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
 
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#getDomainInfo
+     * @see https://www.namesilo.com/api_reference.php#contactUpdate
+     */
     public function modifyContact(Registrar_Domain $domain)
     {
         $c = $domain->getContactRegistrar();
@@ -90,6 +112,13 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
 
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#transferDomain
+     */
     public function transferDomain(Registrar_Domain $domain)
     {
         $params = array(
@@ -97,9 +126,34 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             'auth' => $domain->getEpp(),
         );
 
+        if ($domain->getName() == '.us'){
+            $params['usnc'] = 'C12';
+            $params['usap'] = 'P3';
+        }
+
+        $c = $domain->getContactRegistrar();
+        $params['fn'] = $c->getFirstName();
+        $params['ln'] = $c->getLastName();
+        $params['ad'] = $c->getAddress1();
+        $params['ad2'] = $c->getAddress2();
+        $params['cy'] = $c->getCity();
+        $params['st'] = $c->getState();
+        $params['zp'] = $c->getZip();
+        $params['ct'] = $c->getCountry();
+        $params['em'] = $c->getEmail();
+        $params['ph'] = $c->getTel();
+
         $this->_request('transferDomain', $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return Registrar_Domain
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#getDomainInfo
+     * @see https://www.namesilo.com/api_reference.php#contactList
+     */
     public function getDomainDetails(Registrar_Domain $domain)
     {
         $params = array(
@@ -150,17 +204,29 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         return $domain;
 
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @throws Registrar_Exception
+     */
     public function deleteDomain(Registrar_Domain $domain)
     {
         throw new Registrar_Exception('Registrar does not support domain removal.');
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#registerDomain
+     */
     public function registerDomain(Registrar_Domain $domain)
     {
         $c = $domain->getContactRegistrar();
 
         $params = array(
             'domain' => $domain->getName(),
-            'years' => 1,
+            'years' => $domain->getRegistrationPeriod(),
 
             'fn' => $c->getFirstName(),
             'ln' => $c->getLastName(),
@@ -174,6 +240,11 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             'ph' => $c->getTel(),
         );
 
+        if ($domain->getName() == '.us'){
+            $params['usnc'] = 'C12';
+            $params['usap'] = 'P3';
+        }
+
         $i = 0;
         foreach ($domain->getNameservers() as $ns)
             $params['ns' . $i] = $ns->getHost();
@@ -182,16 +253,31 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
 
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#renewDomain
+     */
     public function renewDomain(Registrar_Domain $domain)
     {
         $params = array(
             'domain' => $domain->getName(),
-            'years' => 1,
+            'years' => $domain->getRegistrationPeriod(),
         );
 
         $this->_request('renewDomain', $params);
         return true;
     }
+
+    /**
+     * @param Registrar_Domain $domain
+     * @return bool
+     * @throws Registrar_Exception
+     * @see https://www.namesilo.com/api_reference.php#removePrivacy
+     * @see https://www.namesilo.com/api_reference.php#addPrivacy
+     */
     public function togglePrivacyProtection(Registrar_Domain $domain)
     {
         $params = array(
