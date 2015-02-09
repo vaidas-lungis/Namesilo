@@ -67,9 +67,14 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             'domain' => $domain->getName(),
         );
 
-        $i = 1;
-        foreach ($domain->getNameservers() as $ns)
-            $params['ns' . $i++] = $ns->getHost();
+        $params['ns1'] = $domain->getNs1();
+        $params['ns2'] = $domain->getNs2();
+        if($domain->getNs3())  {
+            $params['ns3'] = $domain->getNs3();
+        }
+        if($domain->getNs4())  {
+            $params['ns4'] = $domain->getNs4();
+        }
 
         $this->_request('changeNameServers', $params);
 
@@ -182,19 +187,27 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             ->setCountry((string) $contact->country)
             ->setZip((string) $contact->zip);
         // Add nameservers
-        $ns_list = array();
+        $i = 1;
         foreach ($result->nameservers->nameserver as $ns)
         {
-            $n = new Registrar_Domain_Nameserver();
-            $n->setHost((string) $ns);
-            $ns_list[] = $n;
+            if ($i == 1){
+                $domain->setNs1($ns);
+            }
+            if ($i == 2){
+                $domain->setNs2($ns);
+            }
+            if ($i == 3){
+                $domain->setNs3($ns);
+            }
+            if ($i == 4){
+                $domain->setNs4($ns);
+            }
+            $i++;
         }
         $privacy = false;
         if ((string) $result->private == 'Yes')
             $privacy = true;
 
-
-        $domain->setNameservers($ns_list);
         $domain->setExpirationTime(strtotime($result->expires));
         $domain->setRegistrationTime(strtotime($result->created));
         $domain->setPrivacyEnabled($privacy);
@@ -245,10 +258,14 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
             $params['usap'] = 'P3';
         }
 
-        $i = 0;
-        foreach ($domain->getNameservers() as $ns)
-            $params['ns' . $i] = $ns->getHost();
-
+        $params['ns1'] = $domain->getNs1();
+        $params['ns2'] = $domain->getNs2();
+        if($domain->getNs3())  {
+            $params['ns3'] = $domain->getNs3();
+        }
+        if($domain->getNs4())  {
+            $params['ns4'] = $domain->getNs4();
+        }
         $result = $this->_request('registerDomain', $params);
 
         return true;
@@ -389,7 +406,7 @@ class Registrar_Adapter_Namesilo extends Registrar_AdapterAbstract
         );
 
         $result = $this->_request('retrieveAuthCode', $params);
-        return true;
+        return 'EPP transfer code for the domain emailed to the administrative contact';
     }
     /**
      * Runs an api command and returns parsed data.
